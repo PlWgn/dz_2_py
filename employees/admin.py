@@ -1,0 +1,42 @@
+from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
+
+from .models import EmployeeSkill, Skill, User
+
+
+class EmployeeSkillInline(admin.TabularInline):
+    model = EmployeeSkill
+    extra = 1
+
+
+@admin.register(Skill)
+class SkillAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name')
+    search_fields = ('name',)
+
+
+@admin.register(User)
+class EmployeeAdmin(UserAdmin):
+    list_display = (
+        'username',
+        'last_name',
+        'first_name',
+        'patronymic',
+        'gender',
+        'is_staff',
+    )
+    list_filter = ('gender', 'skills', 'is_staff')
+    search_fields = ('username', 'last_name', 'first_name', 'patronymic')
+    inlines = [EmployeeSkillInline]
+    fieldsets = UserAdmin.fieldsets + (
+        (
+            'Данные сотрудника',
+            {'fields': ('patronymic', 'gender', 'description')},
+        ),
+    )
+    add_fieldsets = UserAdmin.add_fieldsets + (
+        (
+            'Данные сотрудника',
+            {'fields': ('first_name', 'last_name', 'patronymic', 'gender')},
+        ),
+    )
